@@ -3,3 +3,5 @@ uvicorn
 psycopg2
 sqlalchemy
 pypika
+nltk
+scikit-learn

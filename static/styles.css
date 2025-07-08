@@ -1,0 +1,148 @@
+/* Genel body */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 600px;
+  margin: 20px auto;
+  background: linear-gradient(135deg, #6b73ff 0%, #5b61d1 100%);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Başlık */
+h2 {
+  text-align: center;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 6px #0009;
+}
+
+/* Chat kutusu */
+#chatbox {
+  background: #121a33;
+  border-radius: 15px;
+  padding: 15px;
+  height: 450px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 20px #0008;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1.1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #4b6cb7 transparent;
+}
+
+/* Scrollbar Chrome/Edge/Safari */
+#chatbox::-webkit-scrollbar {
+  width: 8px;
+}
+#chatbox::-webkit-scrollbar-track {
+  background: transparent;
+}
+#chatbox::-webkit-scrollbar-thumb {
+  background-color: #4b6cb7;
+  border-radius: 4px;
+}
+
+/* Mesaj balonları */
+.user, .bot {
+  max-width: 70%;
+  padding: 12px 18px;
+  border-radius: 20px;
+  position: relative;
+  animation: fadeInUp 0.4s ease forwards;
+  word-wrap: break-word;
+  line-height: 1.4;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  opacity: 0;
+}
+
+/* Kullanıcı mesajı - sağda */
+.user {
+  background: #4b6cb7;
+  color: #e0e7ff;
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
+  animation-delay: 0.1s;
+}
+
+/* Bot mesajı - solda */
+.bot {
+  background: #283e8e;
+  color: #d0d6ff;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
+  animation-delay: 0.3s;
+}
+
+/* Animasyon */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Yazıyor animasyonu */
+#typing {
+  font-style: italic;
+  color: #a3b0ff;
+  padding-left: 15px;
+  height: 24px;
+}
+
+/* Giriş alanı */
+#inputArea {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+/* Input kutusu */
+#userInput {
+  flex: 1;
+  padding: 12px 18px;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  box-shadow: 0 0 12px #4b6cb7;
+  background: #2b3a89;
+  color: #e0e7ff;
+  transition: box-shadow 0.3s ease;
+}
+
+#userInput:focus {
+  box-shadow: 0 0 20px #7b9bff;
+}
+
+/* Gönder butonu */
+button {
+  background: linear-gradient(135deg, #6b73ff 0%, #000dff 100%);
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0,0,255,0.6);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #000dff 0%, #6b73ff 100%);
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}

@@ -15,7 +15,7 @@ class ResponseGenerator:
         if intent == "address_query":
             city = self.classifier.extract_city(user_input)
             if city:
-                query = self.query_builder.get_customers_by_city(city)  # Sınıf metodunu kullan
+                query = self.query_builder.get_customers_by_city(city)
                 result = run_query(query)
                 if result:
                     customers = "\n".join([f"- {row[0]} ({row[1]})" for row in result])
@@ -63,14 +63,20 @@ class ResponseGenerator:
                     return f"{date} tarihine ait satış bilgisi bulunamadı."
             return "Tarih algılanamadı."
 
+        elif intent == "customers_min_products":
+            min_products = self.classifier.extract_min_products(user_input)
+            query = self.query_builder.get_customers_with_minimum_products(min_products)
+            result = run_query(query)
+            if result:
+                response_list = "\n".join([f"- {row[0]}: {row[1]} farklı ürün" for row in result])
+                return f"En az {min_products} farklı ürün satın alan müşteriler:\n{response_list}"
+            else:
+                return f"Hiçbir müşteri en az {min_products} farklı ürün satın almamış."
+
         elif intent == "customer_product_quantity":
             customer_name = self.classifier.extract_customer_name(user_input)
-            product_name = None
-            if self.classifier.products:
-                for p in self.classifier.products:
-                    if p.lower() in user_input.lower():
-                        product_name = p
-                        break
+            product_name, quantity = self.classifier.extract_product_quantity(user_input)
+
             if customer_name and product_name:
                 query = self.query_builder.get_customer_product_quantity(customer_name, product_name)
                 result = run_query(query)

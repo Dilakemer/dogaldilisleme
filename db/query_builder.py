@@ -51,3 +51,23 @@ class QueryBuilder:
             .where(self.invoice_lines.product_name.ilike(f'%{product_name}%')) \
             .groupby(self.customers.name, self.invoice_lines.product_name)
         return str(q)
+    
+
+    def get_all_product_names(self) -> str:
+        q = Query.from_(self.invoice_lines).select(self.invoice_lines.product_name).distinct()
+        return str(q)
+
+    def get_customers_with_minimum_products(self, min_products: int = 3) -> str:
+        # COUNT(DISTINCT invoice_lines.product_name) AS product_count
+        distinct_count = fn.Count(self.invoice_lines.product_name).distinct().as_('product_count')
+
+        q = (
+            Query
+            .from_(self.invoice_lines)
+            .join(self.invoices).on(self.invoice_lines.invoice_id   == self.invoices.invoice_id)
+            .join(self.customers).on(self.invoices.customer_id     == self.customers.customer_id)
+            .select(self.customers.name, distinct_count)
+            .groupby(self.customers.name)
+            .having(fn.Count(self.invoice_lines.product_name).distinct() >= min_products)
+        )
+        return str(q)

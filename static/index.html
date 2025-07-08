@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8" />
     <title>Chatbot Arayüzü</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
-        #chatbox { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; }
-        .user { color: blue; }
-        .bot { color: green; }
-        #inputArea { margin-top: 10px; }
-    </style>
+    <link rel="stylesheet" href="/static/styles.css" />
+
+
 </head>
 <body>
     <h2>Chatbot Arayüzü</h2>
     <div id="chatbox"></div>
+    <div id="typing" style="height:24px; font-style: italic; color:#a3b0ff; margin-top:5px;"></div>
     <div id="inputArea">
         <input type="text" id="userInput" placeholder="Mesajınızı yazın" style="width:80%" />
         <button onclick="sendMessage()">Gönder</button>
@@ -32,24 +29,30 @@
         }
 
         async function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
-            appendMessage('user', text);
-            userInput.value = '';
+        const text = userInput.value.trim();
+        if (!text) return;
+        appendMessage('user', text);
+        userInput.value = '';
 
-            try {
-                const response = await fetch(window.location.origin + '/chat', {
+        // Yazıyor animasyonunu göster
+        const typingElem = document.getElementById('typing');
+        typingElem.textContent = 'Bot yazıyor...';
 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
-                });
-                const data = await response.json();
-                appendMessage('bot', data.response);
-            } catch (error) {
-                appendMessage('bot', 'Sunucu ile bağlantı kurulamadı.');
-            }
+        try {
+            const response = await fetch(window.location.origin + '/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await response.json();
+            typingElem.textContent = '';  // Animasyonu gizle
+            appendMessage('bot', data.response);
+        } catch (error) {
+            typingElem.textContent = '';
+            appendMessage('bot', 'Sunucu ile bağlantı kurulamadı.');
         }
+    }
+
 
         // Enter tuşu ile gönderim
         userInput.addEventListener('keydown', function(event) {
