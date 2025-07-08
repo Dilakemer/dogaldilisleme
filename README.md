@@ -1,3 +1,3 @@
 # ProjectNLP
 
-![Chatbot Arayüzü](static/screenshot).png
+![Chatbot Arayüzü](static/screenshot.png)
