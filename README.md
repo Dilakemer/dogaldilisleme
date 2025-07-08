@@ -1,3 +1,3 @@
 # ProjectNLP
 Chatbot_webUI
-![Chatbot Arayüzü](static/screenshot.png)
+![Chatbot Arayüzü](docs/screenshot.png)
