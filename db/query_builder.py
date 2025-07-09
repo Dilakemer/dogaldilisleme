@@ -58,16 +58,30 @@ class QueryBuilder:
         return str(q)
 
     def get_customers_with_minimum_products(self, min_products: int = 3) -> str:
-        # COUNT(DISTINCT invoice_lines.product_name) AS product_count
         distinct_count = fn.Count(self.invoice_lines.product_name).distinct().as_('product_count')
 
         q = (
             Query
             .from_(self.invoice_lines)
-            .join(self.invoices).on(self.invoice_lines.invoice_id   == self.invoices.invoice_id)
-            .join(self.customers).on(self.invoices.customer_id     == self.customers.customer_id)
+            .join(self.invoices).on(self.invoice_lines.invoice_id == self.invoices.invoice_id)
+            .join(self.customers).on(self.invoices.customer_id == self.customers.customer_id)
             .select(self.customers.name, distinct_count)
             .groupby(self.customers.name)
-            .having(fn.Count(self.invoice_lines.product_name).distinct() >= min_products)
+            .having(fn.Count(self.invoice_lines.product_name).distinct() >= min_products)  # İşte burası!
+        )
+        return str(q)
+    
+    def get_customers_by_product(self, product_name: str) -> str:
+        """
+        Faturalarında product_name geçen müşterilerin isim ve adres (şehir) bilgilerini döner.
+        """
+        q = (
+            Query
+            .from_(self.invoice_lines)
+            .join(self.invoices).on(self.invoice_lines.invoice_id == self.invoices.invoice_id)
+            .join(self.customers).on(self.invoices.customer_id == self.customers.customer_id)
+            .select(self.customers.name, self.customers.address)  # address içinde şehir var
+            .where(self.invoice_lines.product_name.ilike(f"%{product_name}%"))
+            .distinct()
         )
         return str(q)

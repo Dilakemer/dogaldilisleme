@@ -2,6 +2,9 @@ import re
 from datetime import datetime
 from typing import Optional, List, Tuple
 import nltk
+from services.product_loader import load_products_from_db
+
+import difflib
 
 class IntentClassifier:
     def __init__(self, products: Optional[List[str]] = None, debug: bool = False):
@@ -15,6 +18,7 @@ class IntentClassifier:
                 re.compile(r"kaç farklı ürün aldı", re.I),
                 re.compile(r"birden fazla ürün alan müşteriler", re.I),
             ],
+
             "customer_product_quantity": [
                 re.compile(r"kaç\s*adet", re.I),
                 re.compile(r"al[dıi](mış|mı|mi|mu|mü)?|satın\s*al[dıi](mış|mı|mi|mu|mü)?", re.I),
@@ -55,6 +59,13 @@ class IntentClassifier:
 
     def classify(self, text: str) -> str:
         text_lower = text.lower()
+        
+
+        # Müşterilerin faturalarında geçen ürün
+        product_match = re.search(r'faturalarında\s+["\']?(\w+)["\']?\s+geçen', text_lower)
+        if product_match:
+            self.log("Detected intent: customers_by_product")
+            return "customers_by_product"
 
         # Ürün var mı kontrolü
         if any(product in text_lower for product in self.products):
@@ -80,6 +91,25 @@ class IntentClassifier:
             city = match.group(1).capitalize()
             self.log(f"Extracted city: {city}")
             return city
+        return None
+    
+    def extract_product(self, text: str) -> Optional[str]:
+        text_lower = text.lower()
+        
+        # Doğrudan içerme kontrolü
+        for product in self.products:
+            if product in text_lower:
+                return product
+
+        # Kelime kelime fuzzy karşılaştırma
+        words = text_lower.split()
+        close_matches = difflib.get_close_matches(
+            next((w for w in words if difflib.get_close_matches(w, self.products, cutoff=0.8)), ""), 
+            self.products, n=1, cutoff=0.8
+        )
+        if close_matches:
+            return close_matches[0]
+
         return None
 
     def extract_customer_name(self, text: str) -> Optional[str]:
