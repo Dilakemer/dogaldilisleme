@@ -14,16 +14,20 @@ class ResponseGenerator:
     def generate(self, user_input: str) -> str:
         intent = self.classifier.classify(user_input)
 
-        if intent == "address_query":
+        if intent == "customers_by_city":
             city = self.classifier.extract_city(user_input)
-            if city:
-                query = self.query_builder.get_customers_by_city(city)
-                result = run_query(query)
-                if result:
-                    customers = "\n".join([f"- {row[0]} ({row[1]})" for row in result])
-                    return f"{city} şehrindeki müşteriler:\n{customers}\n\n[Oluşturulan SQL sorgusu]:\n{query}"
-                return f"{city} şehrinde müşteri bulunamadı.\n\n[Oluşturulan SQL sorgusu]:\n{query}"
-            return "Şehir adı algılanamadı."
+            if not city:
+                return "Şehir bilgisi bulunamadı, lütfen tekrar belirtin."
+            sql = self.query_builder.get_customers_by_city(city)
+            rows = run_query(sql)
+            if not rows:
+                return f"{city.title()}’de müşteri bulunamadı.\n\n[SQL]:\n{sql}"
+            # Sonucu listele
+            customers = "\n".join(f"- {r[0]} ({r[1]})" for r in rows)
+            return (
+                f"{city.title()}’de yaşayan müşteriler:\n{customers}\n\n"
+                f"[Oluşturulan SQL sorgusu]:\n{sql}"
+            )
 
         elif intent == "total_sales":
             query = self.query_builder.get_total_sales()
@@ -112,46 +116,65 @@ class ResponseGenerator:
 
     def generate_final_answer_with_sql(self, match: str) -> str:
         questions = QUESTIONS_ANSWERS.questions
-        answers = QUESTIONS_ANSWERS.answers
+        answers   = QUESTIONS_ANSWERS.answers
 
         if match not in questions:
             return "Üzgünüm, eşleşen bir kayıt bulunamadı."
 
-        idx = questions.index(match)
+        idx    = questions.index(match)
         intent = self.classifier.classify(match)
 
-        # SQL üretimi intent'e göre yapılır
-        if intent == "total_sales":
+        # Dinamik değişkenler
+        dynamic_answer = ""
+        sql_query      = "-- Sorgu bulunamadı --"
+
+        # 1) Şehir sorgusu
+        if intent == "customers_by_city":
+            city = self.classifier.extract_city(match)
+            sql_query = self.query_builder.get_customers_by_city(city)
+            rows = run_query(sql_query)
+            if rows:
+                customers = "\n".join(f"- {r[0]} ({r[1]})" for r in rows)
+            else:
+                customers = "— Müşteri bulunamadı —"
+            dynamic_answer = f"{city.title()}’de yaşayan müşteriler:\n{customers}"
+
+        # 2) Toplam satış tutarı
+        elif intent == "total_sales":
             sql_query = self.query_builder.get_total_sales()
             result = run_query(sql_query)
-            dynamic_answer = (
-                f"Toplam satış tutarı: {result[0][0]:,.2f} ₺" if result and result[0][0] else "Satış verisi bulunamadı."
-            )
+            if result and result[0][0] is not None:
+                dynamic_answer = f"Toplam satış tutarı: {result[0][0]:,.2f} ₺"
+            else:
+                dynamic_answer = "Satış verisi bulunamadı."
 
+        # 3) En az N farklı ürün
         elif intent == "customers_min_products":
             min_products = self._extract_min_products(match)
             sql_query = self.query_builder.get_customers_with_minimum_products(min_products)
             result = run_query(sql_query)
             if result:
-                dynamic_answer = "\n".join([f"- {row[0]}: {row[1]} farklı ürün" for row in result])
+                lines = "\n".join(f"- {row[0]}: {row[1]} farklı ürün" for row in result)
+                dynamic_answer = f"En az {min_products} farklı ürün satın alan müşteriler:\n{lines}"
             else:
                 dynamic_answer = f"En az {min_products} farklı ürün alan müşteri bulunamadı."
 
+        # 4) Ürün bazlı sorgu
         elif intent == "customers_by_product":
             product = self.classifier.extract_product(match)
             if product:
                 sql_query = self.query_builder.get_customers_by_product(product)
                 result = run_query(sql_query)
                 if result:
-                    dynamic_answer = "\n".join([f"- {row[0]} ({row[1]})" for row in result])
+                    lines = "\n".join(f"- {row[0]} ({row[1]})" for row in result)
+                    dynamic_answer = f"Faturalarında '{product}' geçen müşteriler:\n{lines}"
                 else:
                     dynamic_answer = f"'{product}' içeren fatura bulunamadı."
             else:
-                sql_query = "-- Ürün bulunamadı --"
                 dynamic_answer = "Ürün ismi algılanamadı."
 
+        # 5) Diğer intent’ler
         else:
-            sql_query = "-- Sorgu bulunamadı --"
             dynamic_answer = "Bu soruya karşılık gelen sorgu tanımlı değil."
 
         return (
@@ -159,7 +182,6 @@ class ResponseGenerator:
             f"Cevap:\n{dynamic_answer}\n\n"
             f"[Oluşturulan SQL sorgusu]:\n{sql_query}"
         )
-
 
     @staticmethod
     def _extract_min_products(text: str) -> int:

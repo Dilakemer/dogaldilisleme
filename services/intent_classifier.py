@@ -1,15 +1,22 @@
 import re
+#Metin içinde desen arama, eşleştirme.
 from datetime import datetime
 from typing import Optional, List, Tuple
 import nltk
+#nltk metin işleme, tokenization, stopword'ler, pos tagging gibi temel NLP işlemlerini yapar
 from services.product_loader import load_products_from_db
+from services.city_loader import load_cities_from_db
 
 import difflib
-
+#metinler arasındaki benzerlikleri ölçmel için kullanılır
 class IntentClassifier:
     def __init__(self, products: Optional[List[str]] = None, debug: bool = False):
         self.products = products or []
         self.debug = debug
+
+        
+        # Şehir listesini veritabanından yükle
+        self.cities = load_cities_from_db()
 
         # Intent ve regex kalıplarını tutan dict
         self.intents = {
@@ -24,7 +31,7 @@ class IntentClassifier:
                 re.compile(r"al[dıi](mış|mı|mi|mu|mü)?|satın\s*al[dıi](mış|mı|mi|mu|mü)?", re.I),
             ],
             "address_query": [
-                re.compile(r"\b(izmir|ankara|adana|istanbul|antalya)(de|da|den|dan|li|lı|lu|lü)?\b", re.I)
+                re.compile(r"\b(izmir|ankara|adana|istanbul|antalya|bursa)(de|da|den|dan|li|lı|lu|lü)?\b", re.I)
             ],
             "total_sales": [
                 re.compile(r"toplam satış|ne kadar satış|satış tutarı", re.I)
@@ -59,6 +66,15 @@ class IntentClassifier:
 
     def classify(self, text: str) -> str:
         text_lower = text.lower()
+
+        # Şehir geçiyorsa intent: customers_by_city
+        if any(city in text_lower for city in self.cities):
+            self.log("Detected intent: customers_by_city")
+            return "customers_by_city"
+
+
+            self.log("Detected intent: unknown")
+            return "unknown"
         
 
         # Müşterilerin faturalarında geçen ürün
@@ -81,17 +97,17 @@ class IntentClassifier:
                 if pattern.search(text):
                     self.log(f"Detected intent: {intent}")
                     return intent
+                
+        
+        
 
-        self.log("Detected intent: unknown")
-        return "unknown"
-
-    def extract_city(self, text: str) -> Optional[str]:
-        match = re.search(r"\b(izmir|ankara|adana|istanbul|antalya)\b", text, re.I)
-        if match:
-            city = match.group(1).capitalize()
-            self.log(f"Extracted city: {city}")
-            return city
+    def extract_city(self, text: str) -> str | None:
+        text_lower = text.lower()
+        for city in self.cities:
+            if city in text_lower:
+                return city
         return None
+
     
     def extract_product(self, text: str) -> Optional[str]:
         text_lower = text.lower()
