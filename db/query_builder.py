@@ -1,6 +1,6 @@
 from pypika import Query, Table, functions as fn
 from pypika.terms import Order
-
+#kullanıcıdan gelen niyete göre dinamik sql sorguları oluştumak ıcin
 class QueryBuilder:
     def __init__(self):
         self.customers = Table("customers")
@@ -26,6 +26,25 @@ class QueryBuilder:
             .where(self.customers.name == customer_name) \
             .groupby(self.customers.name)
         return str(q)
+    def get_customers_spending_min(self, min_amount: float) -> str:
+        invoices = Table("invoices")
+        customers = Table("customers")
+
+        q = (
+            Query
+            .from_(invoices)
+            .join(customers).on(invoices.customer_id == customers.customer_id)
+            .select(
+                customers.name,
+                fn.Max(invoices.invoice_date).as_("last_invoice_date"),
+                fn.Sum(invoices.total_amount).as_("total_spent")
+            )
+            .groupby(customers.name)
+            .having(fn.Sum(invoices.total_amount) > min_amount)
+            .orderby(fn.Max(invoices.invoice_date), order=Order.desc)  # BU satır değişti!
+        )
+        return str(q)
+
 
     def get_top_spending_customers(self, limit: int = 5) -> str:
         q = Query.from_(self.invoices) \
