@@ -44,11 +44,6 @@ async def chat_endpoint(request: ChatRequest):
     if intent in ["customers_min_products", "customers_by_product"]:
         response = response_generator.generate_with_sql(user_text)
         return {"response": response}
-    
-    if intent == "customers_by_city":
-        # doğrudan SQL’li cevap üret
-        answer = response_generator.generate(user_text)
-        return {"response": answer}
 
     # 3) Similarity bazlı soru eşleşmesi
     match, score = find_similar_question(user_text, questions)
