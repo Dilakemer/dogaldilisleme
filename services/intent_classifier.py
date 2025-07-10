@@ -2,6 +2,8 @@ from typing import Optional, List
 from .intent_patterns import INTENT_PATTERNS
 from .intent_rules import detect_intent  # fonksiyon bazlı ise
 from services.extractors import (extract_amount,extract_city,extract_customer_name,extract_date,extract_min_products,extract_product,extract_product_quantity)
+import unicodedata
+
 class IntentClassifier:
     def __init__(self, products: Optional[List[str]] = None, debug: bool = False):
         self.products = products or []
@@ -12,20 +14,36 @@ class IntentClassifier:
         if self.debug:
             print(f"[DEBUG] {message}")
 
+    def normalize_text(self, text: str) -> str:
+        # Unicode normalizasyonu yap
+        normalized = unicodedata.normalize("NFKD", text)
+
+        # Combining karakterleri (nokta üstü vs.) sil
+        cleaned = ''.join(c for c in normalized if not unicodedata.combining(c))
+
+        # Küçük harfe çevir
+        return cleaned.lower()
+    
     def classify(self, text: str) -> str:
-        # Öncelikle özel intent kurallarını deneyelim (fonksiyon bazlı)
-        special_intent = detect_intent(text, products=self.products)
+
+        normalized_text = self.normalize_text(text)
+        self.log(f"Classifying normalized text: {normalized_text}")
+
+        special_intent = detect_intent(normalized_text, products=self.products)
+        self.log(f"detect_intent returned: {special_intent}")
         if special_intent:
             self.log(f"Detected special intent: {special_intent}")
             return special_intent
 
-        # Ardından regex patternlerle intent tespiti
         for intent, patterns in self.intent_patterns.items():
             for pattern in patterns:
-                if pattern.search(text):
-                    self.log(f"Detected intent: {intent}")
+                if pattern.search(normalized_text):
+                    self.log(f"Pattern matched intent: {intent} with pattern: {pattern.pattern}")
                     return intent
+                else:
+                    self.log(f"Pattern NOT matched: {pattern.pattern}")
 
+        # Eğer hiçbir pattern eşleşmediyse buraya gelir
         self.log("Detected intent: unknown")
         return "unknown"
 

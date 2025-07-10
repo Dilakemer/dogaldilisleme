@@ -7,6 +7,7 @@ from handlers.customers_spending_min_handler import CustomersSpendingMinHandler
 from handlers.base_handler import BaseHandler
 from handlers.customers_min_product_handler import CustomersMinProductsHandler
 from handlers.customers_by_product_handler import CustomersByProductHandler
+from handlers.customers_have_one_invoice_line_handler import CustomersHaveOneInvoiceLineHandler
 class ResponseGenerator:
     def __init__(self, products=None, debug=False):
         self.classifier = IntentClassifier(products=products, debug=debug)
@@ -19,6 +20,7 @@ class ResponseGenerator:
             "customers_spending_min": CustomersSpendingMinHandler(self.query_builder, self.classifier),
             "customers_min_products": CustomersMinProductsHandler(self.query_builder, self.classifier),
             "customers_by_product": CustomersByProductHandler(self.query_builder, self.classifier),
+            "customers_have_one_invoice_line": CustomersHaveOneInvoiceLineHandler(self.query_builder, self.classifier)
 
         }
 

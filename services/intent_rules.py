@@ -23,6 +23,11 @@ def detect_intent(text: str, products: list[str] = []) -> Optional[str]:
         for pattern in INTENT_PATTERNS.get("customer_product_quantity", []):
             if pattern.search(text_lower):
                 return "customer_product_quantity"
+    
+    # 5) sadece tek bir fatura satırı olan müşteriler
+    if "sadece bir fatura satırı" in text_lower or "tek fatura satırı" in text_lower:
+        return "customers_have_one_invoice_line"
+    
 
-    # 5) Diğer tüm intent’leri pattern’lerle IntentClassifier yapacak
+    # 6) Diğer tüm intent’leri pattern’lerle IntentClassifier yapacak
     return None

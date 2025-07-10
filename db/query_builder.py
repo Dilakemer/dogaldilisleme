@@ -104,3 +104,22 @@ class QueryBuilder:
             .distinct()
         )
         return str(q)
+    
+    def get_customers_have_one_invoice_line(self) -> str:
+        """
+        İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listeler.
+        """
+        q = (
+            Query
+            .from_(self.customers)
+            .join(self.invoices).on(self.customers.customer_id == self.invoices.customer_id)
+            .join(self.invoice_lines).on(self.invoices.invoice_id == self.invoice_lines.invoice_id)
+            .select(
+                self.customers.name,
+                self.invoices.invoice_id,
+                fn.Count(self.invoice_lines.line_id).as_('line_count')
+            )
+            .groupby(self.invoices.invoice_id, self.customers.name)
+            .having(fn.Count(self.invoice_lines.line_id) == 1)
+        )
+        return q.get_sql()
