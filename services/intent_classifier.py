@@ -1,31 +1,42 @@
+# services/intent_classifier.py
+
 from typing import Optional, List
 from .intent_patterns import INTENT_PATTERNS
 from .intent_rules import detect_intent  # fonksiyon bazlı ise
-from services.extractors import (extract_amount,extract_customer_name,extract_date,extract_min_products,extract_product,extract_product_quantity,extract_city)
+from services.extractors import (
+    extract_amount,
+    extract_customer_name,
+    extract_date,
+    extract_min_products,
+    extract_product,
+    extract_product_quantity,
+    extract_city
+)
 import unicodedata
 
+from services.embedding_intent_classifier import EmbeddingIntentClassifier
+
 class IntentClassifier:
-    def __init__(self, products: Optional[List[str]] = None, debug: bool = False):
+    def __init__(self, products: Optional[List[str]] = None, debug: bool = False, use_embedding_classifier: bool = True):
         self.products = products or []
         self.debug = debug
         self.intent_patterns = INTENT_PATTERNS
+        self.use_embedding_classifier = use_embedding_classifier
+
+        if use_embedding_classifier:
+            self.embedding_classifier = EmbeddingIntentClassifier(debug=debug)
+            self.embedding_classifier.load("models/embedding_intent_classifier.pkl")
 
     def log(self, message: str):
         if self.debug:
             print(f"[DEBUG] {message}")
 
     def normalize_text(self, text: str) -> str:
-        # Unicode normalizasyonu yap
         normalized = unicodedata.normalize("NFKD", text)
-
-        # Combining karakterleri (nokta üstü vs.) sil
         cleaned = ''.join(c for c in normalized if not unicodedata.combining(c))
-
-        # Küçük harfe çevir
         return cleaned.lower()
-    
-    def classify(self, text: str) -> str:
 
+    def classify(self, text: str) -> str:
         normalized_text = self.normalize_text(text)
         self.log(f"Classifying normalized text: {normalized_text}")
 
@@ -40,16 +51,16 @@ class IntentClassifier:
                 if pattern.search(normalized_text):
                     self.log(f"Pattern matched intent: {intent} with pattern: {pattern.pattern}")
                     return intent
-                else:
-                    self.log(f"Pattern NOT matched: {pattern.pattern}")
 
-        # Eğer hiçbir pattern eşleşmediyse buraya gelir
-        self.log("Detected intent: unknown")
+        if self.use_embedding_classifier:
+            intent = self.embedding_classifier.classify(text)
+            self.log(f"Embedding classifier returned: {intent}")
+            if intent != "unknown":
+                return intent
+
         return "unknown"
 
-    # Extractor fonksiyonlarını çağıran metodlar
-   
-
+    # Extractor metodları (örnek)
     def extract_product(self, text: str) -> Optional[str]:
         return extract_product(text, self.products)
 
@@ -69,7 +80,7 @@ class IntentClassifier:
         return extract_min_products(text)
 
     def extract_min_spending(self, text: str) -> float:
-        return extract_amount(text)  # alias
+        return extract_amount(text)
 
     def extract_location(self, text: str) -> Optional[str]:
         return extract_city(text)

@@ -7,3 +7,4 @@ nltk
 scikit-learn
 sentence-transformers
 stanza
+pandas
