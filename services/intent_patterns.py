@@ -58,16 +58,20 @@ INTENT_PATTERNS = {
         re.compile(r"tek\s*fatura\s*satiri\s*(olan|iceren|bulunan)", re.I),
         re.compile(r"tek\s*bir\s*satir.*fatura", re.I),
     ],
-
-    "top_spenders_recent":[
-        re.compile(r"son\s*30\s*gün.*en\s*çok\s*harcayan",re.I),
-        re.compile(r"son\s*30\s*gün.*en\s*çok\s*harcayan\s*musteriler",re.I)
-    ],
     
-"most_expensive_invoice": [
-    re.compile(r"en\s*pahalı.*(birim\s*fiyat)?.*fatura.*", re.IGNORECASE),
-    re.compile(r"birim\s*fiyatı\s*en\s*yüksek\s*ürün.*", re.IGNORECASE),
-],
+    "most_expensive_product_invoice":[
+         re.compile(
+    r"(en\s+pahalı\s+ürün|en\s+yüksek\s+birim\s+fiyat(lı)?\s+ürün|en\s+pahalı\s+kalem).*(fatura\s+numarası|fatura\s+no|fatura)\s*(müşteri\s+adı|müşteri|isim|ad|ürün\s+adı|ürün)?", re.I)   ],
+    
+    "most_expensive_product_invoice": [
+        re.compile(r"en\s*pahalı.*(birim\s*fiyat)?.*fatura.*", re.IGNORECASE),
+        re.compile(r"birim\s*fiyatı\s*en\s*yüksek\s*ürün.*", re.IGNORECASE),
+    ],
 
+    "top_spenders_recent": [
+    re.compile(r"son\s*(\d+)?\s*gün.*en\s*fazla.*(harcayan|tutar).*musteri", re.I),
+    re.compile(r"en\s*fazla.*toplam.*fatura.*tutar.*musteri", re.I),
+    re.compile(r"top\s*(\d+)?\s*musteri.*(en|fazla).*harcama", re.I),
+]
 
 }

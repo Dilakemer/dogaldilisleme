@@ -1,6 +1,6 @@
 from .base_handler import BaseHandler
 from db.connection import run_query
-"""Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele."""
+"""En pahalı ürün kalemini (birim fiyat olarak) içeren fatura numarası, müşteri adı ve ürün adını getir."""
 
 class MostExpensiveProductInvoiceHandler(BaseHandler):
     def handle(self, user_input: str) -> str:

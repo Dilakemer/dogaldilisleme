@@ -10,5 +10,5 @@ class TopSpendersRecentHandler(BaseHandler):
             return "Son 30 gün içinde harcama yapan müşteri bulunamadı."
 
         rows = [f"- {row[0]}: {row[1]:.2f} ₺" for row in result]  # row[0]: name, row[1]: total_spent
-        response = "Son 30 günün en çok harcayan müşterileri:\n" + "\n".join(rows)
+        response = "Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteri:\n" + "\n".join(rows)
         return f"{response}\n\n[Oluşturulan SQL sorgusu]: {query}"
