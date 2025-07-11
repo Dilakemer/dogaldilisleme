@@ -28,13 +28,12 @@ def extract_customer_name(text: str) -> Optional[str]:
     return matches[0] if matches else None
 
 def extract_amount(text: str) -> float:
-    match = re.search(r"(\d+[\.,]?\d*)\s*tl", text.lower())
+    import re
+    match = re.search(r"(\d+(?:[\.,]\d+)?)\s*(?:tl|₺)?", text, re.IGNORECASE)
     if match:
-        try:
-            return float(match.group(1).replace(",", "."))
-        except ValueError:
-            return 10000.0
-    return 10000.0
+        return float(match.group(1).replace(",", "."))
+    return 0.0
+
 
 def extract_date(text: str) -> Optional[str]:
     match = re.search(r"\d{4}-\d{2}-\d{2}", text)
