@@ -36,31 +36,41 @@ class IntentClassifier:
         cleaned = ''.join(c for c in normalized if not unicodedata.combining(c))
         return cleaned.lower()
 
-    def classify(self, text: str) -> str:
+    # Değişen kısım: classify artık liste döndürüyor ve çoklu intent destekliyor
+    def classify(self, text: str) -> List[str]:
         normalized_text = self.normalize_text(text)
         self.log(f"Classifying normalized text: {normalized_text}")
 
+        detected_intents = set()
+
+        # Kural tabanlı intent tespiti (rule-based)
         special_intent = detect_intent(normalized_text, products=self.products)
         self.log(f"detect_intent returned: {special_intent}")
         if special_intent:
             self.log(f"Detected special intent: {special_intent}")
-            return special_intent
+            detected_intents.add(special_intent)
 
+        # Regex pattern eşleşmeleri
         for intent, patterns in self.intent_patterns.items():
             for pattern in patterns:
                 if pattern.search(normalized_text):
                     self.log(f"Pattern matched intent: {intent} with pattern: {pattern.pattern}")
-                    return intent
+                    detected_intents.add(intent)
 
-        if self.use_embedding_classifier:
+        # Eğer regex/rule ile bulunamadıysa embedding ile dene
+        if self.use_embedding_classifier and not detected_intents:
             intent = self.embedding_classifier.classify(text)
             self.log(f"Embedding classifier returned: {intent}")
             if intent != "unknown":
-                return intent
+                detected_intents.add(intent)
 
-        return "unknown"
+        # Eğer hiç intent bulunamadıysa "unknown" döndür
+        if not detected_intents:
+            return ["unknown"]
 
-    # Extractor metodları (örnek)
+        return list(detected_intents)
+
+    # Extractor metodları (değişmedi)
     def extract_product(self, text: str) -> Optional[str]:
         return extract_product(text, self.products)
 
