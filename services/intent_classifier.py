@@ -58,11 +58,12 @@ class IntentClassifier:
                     detected_intents.add(intent)
 
         # Eğer regex/rule ile bulunamadıysa embedding ile dene
-        if self.use_embedding_classifier and not detected_intents:
+        if self.use_embedding_classifier:
             intent = self.embedding_classifier.classify(text)
             self.log(f"Embedding classifier returned: {intent}")
             if intent != "unknown":
                 detected_intents.add(intent)
+
 
         # Eğer hiç intent bulunamadıysa "unknown" döndür
         if not detected_intents:

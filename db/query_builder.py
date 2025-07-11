@@ -126,3 +126,29 @@ class QueryBuilder:
             .having(fn.Count(self.invoice_lines.line_id) == 1)
         )
         return q.get_sql()
+    
+    def get_top_spenders_recent(self, limit: int = 3) -> str:
+        """
+        Son 30 gün içinde en fazla toplam harcamayı yapan müşterileri listeler.
+        """
+        from datetime import datetime, timedelta
+
+        # 30 gün öncesi için tarih
+        today = datetime.today()
+        thirty_days_ago = today - timedelta(days=30)
+        date_str = thirty_days_ago.strftime('%Y-%m-%d')
+
+        q = (
+            Query
+            .from_(self.invoices)
+            .join(self.customers).on(self.customers.customer_id == self.invoices.customer_id)
+            .select(
+                self.customers.name,
+                fn.Sum(self.invoices.total_amount).as_('total_spent')
+            )
+            .where(self.invoices.invoice_date >= date_str)
+            .groupby(self.customers.name)
+            .orderby(fn.Sum(self.invoices.total_amount), order=Order.desc)
+            .limit(limit)
+        )
+        return str(q)

@@ -1,6 +1,8 @@
 text,label
+"Toplam satış tutarı nedir?","total_sales"
 "Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele.","top_spenders_recent"
 "Faturalarında Laptop geçen tüm müşterilerin adlarını ve şehir bilgilerini getir.","customers_by_product"
 "En az 3 farklı ürün satın almış olan müşterileri ve kaç farklı ürün aldıklarını listele.","customers_min_products"
 "Toplamda 10.000 TL’den fazla harcama yapan müşterilerin son fatura tarihlerini getir.","customers_spending_min"
 "İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listele.","customers_have_one_invoice_line"
+"Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele.","top_spenders_recent"

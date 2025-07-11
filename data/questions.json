@@ -7,7 +7,7 @@
   "Tarihe göre satış bilgisi nedir?": "Tarihe göre satış bilgisi şöyledir ...",
   "Faturalarında \"Laptop\" geçen tüm müşterilerin adlarını ve şehir bilgilerini (adres üzerinden) getir.": "Faturalarında 'Laptop' geçen müşteriler: …",
   "Toplamda X TL’den fazla harcama yapan müşterilerin son fatura tarihlerini getir.": "...",
-  "İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listele.":"..."
-
+  "İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listele.":"...",
+  "Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele.":"..."
 
 }
