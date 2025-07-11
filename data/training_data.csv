@@ -7,3 +7,4 @@ text,label
 "İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listele.","customers_have_one_invoice_line"
 "En pahalı ürün kalemini (birim fiyat olarak) içeren fatura numarası, müşteri adı ve ürün adını getir.","most_expensive_product_invoice"
 "X ne kadar harcama yapmış","customer_spending"
+"Son 30 günün en çok harcama yapan ilk 3 müşterisi","top_spenders_recent"

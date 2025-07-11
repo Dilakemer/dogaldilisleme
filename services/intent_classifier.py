@@ -3,6 +3,7 @@
 from typing import Optional, List
 from .intent_patterns import INTENT_PATTERNS
 from .intent_rules import detect_intent  # fonksiyon bazlı ise
+from services.customers_name_loader import load_customer_names_from_db
 from services.extractors import (
     extract_amount,
     extract_customer_name,
@@ -22,6 +23,7 @@ class IntentClassifier:
         self.debug = debug
         self.intent_patterns = INTENT_PATTERNS
         self.use_embedding_classifier = use_embedding_classifier
+        self.customer_names = load_customer_names_from_db()
 
         if use_embedding_classifier:
             self.embedding_classifier = EmbeddingIntentClassifier(debug=debug)
@@ -44,7 +46,8 @@ class IntentClassifier:
         detected_intents = set()
 
         # Kural tabanlı intent tespiti (rule-based)
-        special_intent = detect_intent(normalized_text, products=self.products)
+        special_intent = detect_intent(normalized_text, products=self.products, known_customers=self.customer_names)
+
         self.log(f"detect_intent returned: {special_intent}")
         if special_intent:
             self.log(f"Detected special intent: {special_intent}")
@@ -77,7 +80,7 @@ class IntentClassifier:
         return extract_product(text, self.products)
 
     def extract_customer_name(self, text: str) -> Optional[str]:
-        return extract_customer_name(text)
+        return extract_customer_name(text, self.customer_names)
 
     def extract_amount(self, text: str) -> float:
         return extract_amount(text)

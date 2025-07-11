@@ -23,22 +23,36 @@ class ResponseGenerator:
             "customers_min_products": CustomersMinProductsHandler(self.query_builder, self.classifier),
             "customers_by_product": CustomersByProductHandler(self.query_builder, self.classifier),
             "customers_have_one_invoice_line": CustomersHaveOneInvoiceLineHandler(self.query_builder, self.classifier),
-            "most_expensive_product_invoice": MostExpensiveProductInvoiceHandler(self.query_builder,self.classifier),
-            "top_spenders_recent": TopSpendersRecentHandler(self.query_builder,self.classifier)
+            "most_expensive_product_invoice": MostExpensiveProductInvoiceHandler(self.query_builder, self.classifier),
+            "top_spenders_recent": TopSpendersRecentHandler(self.query_builder, self.classifier)
+        }
+
+        self.intent_titles = {
+            "address_query": "📍 Adres Sorgusu",
+            "total_sales": "💰 Toplam Satış Tutarı",
+            "customer_spending": "🧾 Müşteri Harcaması",
+            "customers_spending_min": "🛒 Belirli Tutar Üzerinde Harcama Yapan Müşteriler",
+            "customers_min_products": "📦 En Az Belirli Sayıda Ürün Alan Müşteriler",
+            "customers_by_product": "🔎 Ürün Bazlı Müşteri Sorgusu",
+            "customers_have_one_invoice_line": "📃 Tek Fatura Satırı Olan Müşteriler",
+            "most_expensive_product_invoice": "🏆 En Pahalı Ürün Kalemli Fatura",
+            "top_spenders_recent": "📊 Son 30 Günün En Çok Harcayan Müşterileri"
         }
 
     def generate(self, user_input: str) -> str:
-        intents = self.classifier.classify(user_input)  # Çoklu intent listesi alıyoruz
+        intents = self.classifier.classify(user_input)
         responses = []
 
         for intent in intents:
             handler = self.intent_map.get(intent)
-            if handler:
-                response = handler.handle(user_input)
-                responses.append(f"### {intent} ###\n{response}")
+            if not handler:
+                continue  # handler bulunamadıysa geç
+
+            response = handler.handle(user_input)
+            title = self.intent_titles.get(intent, intent.replace("_", " ").title())
+            responses.append(f"**{title}**\n{response}\n")
 
         if responses:
-            # Çoklu cevapları ayırmak için istersen "\n---\n" yerine farklı ayraç da kullanabilirsin
             return "\n---\n".join(responses)
 
         return "Sorduğunuzu anlayamadım, lütfen tekrar deneyin."

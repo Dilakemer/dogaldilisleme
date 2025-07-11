@@ -6,6 +6,9 @@ class QueryBuilder:
         self.customers = Table("customers")
         self.invoices = Table("invoices")
         self.invoice_lines = Table("invoice_lines")
+        
+    def get_all_customer_names(self) -> str:
+        return 'SELECT name FROM customers'
 
     def get_customers_by_city(self, city: str) -> str:
         q = (

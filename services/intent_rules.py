@@ -4,7 +4,7 @@ import re
 from services.intent_patterns import INTENT_PATTERNS
 from services.extractors import extract_customer_name
 
-def detect_intent(text: str, products: list[str] = []) -> Optional[str]:
+def detect_intent(text: str, products: list[str] = [], known_customers: list[str] = []) -> Optional[str]:
     text_lower = text.lower()
 
     # 1) "son fatura" + herhangi bir TL miktarı → kesin spending_min
@@ -30,7 +30,7 @@ def detect_intent(text: str, products: list[str] = []) -> Optional[str]:
         return "customers_have_one_invoice_line"
     
     # 6) Bireysel müşteri harcaması (örnek: Ayşe Demir ne kadar harcamış)
-    name = extract_customer_name(text)
+    name = extract_customer_name(text, known_customers)
     if name and "harcam" in text_lower:
         return "customer_spending"
         
