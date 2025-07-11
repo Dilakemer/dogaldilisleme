@@ -6,3 +6,4 @@ pypika
 nltk
 scikit-learn
 sentence-transformers
+stanza

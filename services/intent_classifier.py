@@ -1,7 +1,7 @@
 from typing import Optional, List
 from .intent_patterns import INTENT_PATTERNS
 from .intent_rules import detect_intent  # fonksiyon bazlı ise
-from services.extractors import (extract_amount,extract_city,extract_customer_name,extract_date,extract_min_products,extract_product,extract_product_quantity)
+from services.extractors import (extract_amount,extract_customer_name,extract_date,extract_min_products,extract_product,extract_product_quantity,extract_city)
 import unicodedata
 
 class IntentClassifier:
@@ -48,8 +48,7 @@ class IntentClassifier:
         return "unknown"
 
     # Extractor fonksiyonlarını çağıran metodlar
-    def extract_city(self, text: str) -> Optional[str]:
-        return extract_city(text)
+   
 
     def extract_product(self, text: str) -> Optional[str]:
         return extract_product(text, self.products)
@@ -74,3 +73,6 @@ class IntentClassifier:
     
     def extract_product(self, text: str) -> Optional[str]:
         return extract_product(text, self.products)
+    
+    def extract_location(self, text: str) -> Optional[str]:
+        return extract_city(text)

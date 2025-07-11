@@ -1,7 +1,8 @@
 import difflib
 import json
 import os
-def find_similar_question(user_question: str, questions_list: list, threshold=0.6):
+
+def find_similar_question(user_question: str, questions_list: list, threshold=0.0):
     user_question = user_question.lower()
     best_match = None
     highest_ratio = 0
@@ -12,9 +13,8 @@ def find_similar_question(user_question: str, questions_list: list, threshold=0.
             highest_ratio = ratio
             best_match = q
 
-    if highest_ratio >= threshold:
-        return best_match, highest_ratio
-    return None, 0
+    return best_match, highest_ratio  # Skor ne olursa olsun dön
+
 
 def load_questions():
     path = os.path.join(os.path.dirname(__file__), '../data/questions.json')

@@ -8,12 +8,14 @@ class QueryBuilder:
         self.invoice_lines = Table("invoice_lines")
 
     def get_customers_by_city(self, city: str) -> str:
-        normalized_city = city.replace("İ", "i").lower()
-        q = Query.from_(self.customers) \
-            .select(self.customers.name, self.customers.address) \
-            .where(self.customers.address.ilike(f'%{normalized_city}%')) \
-            .orderby(self.customers.name)
+        q = (
+            Query
+            .from_(self.customers)
+            .select(self.customers.name, self.customers.address)
+            .where(self.customers.address.like(f"%{city}%"))
+        )
         return str(q)
+
 
     def get_total_sales(self) -> str:
         q = Query.from_(self.invoices).select(fn.Sum(self.invoices.total_amount))
@@ -26,6 +28,7 @@ class QueryBuilder:
             .where(self.customers.name == customer_name) \
             .groupby(self.customers.name)
         return str(q)
+    
     def get_customers_spending_min(self, min_amount: float) -> str:
         invoices = Table("invoices")
         customers = Table("customers")

@@ -3,7 +3,7 @@ from db.connection import run_query
 
 class AddressQueryHandler(BaseHandler):
     def handle(self, text: str) -> str:
-        city = self.classifier.extract_city(text)
+        city = self.classifier.extract_location(text)
         if not city:
             return "Şehir adı algılanamadı."
         
