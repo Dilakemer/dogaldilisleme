@@ -6,5 +6,6 @@ pypika
 nltk
 scikit-learn
 sentence-transformers
-stanza
 pandas
+regex
+unicodedata2

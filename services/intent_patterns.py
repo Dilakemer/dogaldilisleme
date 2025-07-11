@@ -19,8 +19,8 @@ INTENT_PATTERNS = {
     ],
 
     "customer_spending": [
-        re.compile(r"harcadi", re.I),
-        re.compile(r"ne kadar odedi", re.I)
+        re.compile(r"(\b[a-zçğıöşü]+\s+[a-zçğıöşü]+)\s+ne kadar harcamış"),
+        re.compile(r"(\b[a-zçğıöşü]+\s+[a-zçğıöşü]+)\s+harcaması"),
     ],
 
     "customers_spending_min": [
@@ -57,7 +57,17 @@ INTENT_PATTERNS = {
         re.compile(r"tek\s*bir\s*fatura\s*satiri\s*olan", re.I),
         re.compile(r"tek\s*fatura\s*satiri\s*(olan|iceren|bulunan)", re.I),
         re.compile(r"tek\s*bir\s*satir.*fatura", re.I),
-    ]
+    ],
+
+    "top_spenders_recent":[
+        re.compile(r"son\s*30\s*gün.*en\s*çok\s*harcayan",re.I),
+        re.compile(r"son\s*30\s*gün.*en\s*çok\s*harcayan\s*musteriler",re.I)
+    ],
+    
+"most_expensive_invoice": [
+    re.compile(r"en\s*pahalı.*(birim\s*fiyat)?.*fatura.*", re.IGNORECASE),
+    re.compile(r"birim\s*fiyatı\s*en\s*yüksek\s*ürün.*", re.IGNORECASE),
+],
 
 
 }

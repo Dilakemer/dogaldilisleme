@@ -24,8 +24,12 @@ def extract_product(text: str, products: List[str]) -> Optional[str]:
     return None
 
 def extract_customer_name(text: str) -> Optional[str]:
-    matches = re.findall(r"\b[A-ZÇĞİÖŞÜ][a-zçğıöşü]+\s[A-ZÇĞİÖŞÜ][a-zçğıöşü]+", text)
-    return matches[0] if matches else None
+    # Burada text'i başlık formatına çevirmek iyi olabilir
+    normalized = text.title()
+    matches = re.findall(r"\b[A-ZÇĞİÖŞÜ][a-zçğıöşü]+\s[A-ZÇĞİÖŞÜ][a-zçğıöşü]+", normalized)
+    if matches:
+        return matches[0]
+    return None
 
 def extract_amount(text: str) -> float:
     import re

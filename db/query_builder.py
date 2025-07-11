@@ -152,3 +152,20 @@ class QueryBuilder:
             .limit(limit)
         )
         return str(q)
+    
+    def get_most_expensive_product_invoice(self) -> str:
+        q = (
+            Query
+            .from_(self.invoice_lines)
+            .join(self.invoices).on(self.invoice_lines.invoice_id == self.invoices.invoice_id)
+            .join(self.customers).on(self.invoices.customer_id == self.customers.customer_id)
+            .select(
+                self.invoices.invoice_id,
+                self.customers.name,
+                self.invoice_lines.product_name
+            )
+            .orderby(self.invoice_lines.unit_price, order=Order.desc)
+            .limit(1)
+        )
+        return str(q)
+

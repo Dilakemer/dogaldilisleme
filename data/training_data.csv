@@ -6,3 +6,5 @@ text,label
 "Toplamda 10.000 TL’den fazla harcama yapan müşterilerin son fatura tarihlerini getir.","customers_spending_min"
 "İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listele.","customers_have_one_invoice_line"
 "Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele.","top_spenders_recent"
+"En pahalı ürün kalemini (birim fiyat olarak) içeren fatura numarası, müşteri adı ve ürün adını getir.","most_expensive_product_invoice"
+"X ne kadar harcama yapmış","customer_spending"

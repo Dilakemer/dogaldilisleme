@@ -57,12 +57,13 @@ class IntentClassifier:
                     self.log(f"Pattern matched intent: {intent} with pattern: {pattern.pattern}")
                     detected_intents.add(intent)
 
-        # Eğer regex/rule ile bulunamadıysa embedding ile dene
-        if self.use_embedding_classifier:
+        # Bu satır embedding'i sadece önceki yollar başarısızsa çalıştırır
+        if self.use_embedding_classifier and not detected_intents:
             intent = self.embedding_classifier.classify(text)
             self.log(f"Embedding classifier returned: {intent}")
             if intent != "unknown":
                 detected_intents.add(intent)
+
 
 
         # Eğer hiç intent bulunamadıysa "unknown" döndür
@@ -95,3 +96,5 @@ class IntentClassifier:
 
     def extract_location(self, text: str) -> Optional[str]:
         return extract_city(text)
+    
+    

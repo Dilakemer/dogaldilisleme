@@ -1,4 +1,5 @@
 {
+  "X ne kadar harcama yapmış":"...",
   "En az 2 farklı ürün satın alan müşteriler kimler?": "En az 2 farklı ürün satın alan müşteriler: ...",
   "En az 3 farklı ürün satın alan müşteriler kimler?": "En az 3 farklı ürün satın alan müşteriler: ...",
   "Toplam satış tutarı nedir?": "Toplam satış tutarı 1,000,000 ₺",
@@ -8,6 +9,7 @@
   "Faturalarında \"Laptop\" geçen tüm müşterilerin adlarını ve şehir bilgilerini (adres üzerinden) getir.": "Faturalarında 'Laptop' geçen müşteriler: …",
   "Toplamda X TL’den fazla harcama yapan müşterilerin son fatura tarihlerini getir.": "...",
   "İçinde sadece tek bir fatura satırı olan faturaları ve bu faturaların müşterilerini listele.":"...",
-  "Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele.":"..."
+  "Son 30 gün içinde en fazla toplam fatura tutarına ulaşan 3 müşteriyi listele.":"...",
+  "En pahalı ürün kalemini (birim fiyat olarak) içeren fatura numarası, müşteri adı ve ürün adını getir.":"..."
 
 }

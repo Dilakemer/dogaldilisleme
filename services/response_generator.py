@@ -8,7 +8,7 @@ from handlers.customers_min_product_handler import CustomersMinProductsHandler
 from handlers.customers_by_product_handler import CustomersByProductHandler
 from handlers.customers_have_one_invoice_line_handler import CustomersHaveOneInvoiceLineHandler
 from handlers.top_spenders_recent_handler import TopSpendersRecentHandler
-
+from handlers.most_expensive_product_invoice_handler import MostExpensiveProductInvoiceHandler
 class ResponseGenerator:
     def __init__(self, products=None, debug=False):
         self.classifier = IntentClassifier(products=products, debug=debug)
@@ -23,7 +23,7 @@ class ResponseGenerator:
             "customers_by_product": CustomersByProductHandler(self.query_builder, self.classifier),
             "customers_have_one_invoice_line": CustomersHaveOneInvoiceLineHandler(self.query_builder, self.classifier),
             "top_spenders_recent": TopSpendersRecentHandler(self.query_builder, self.classifier),
-
+            "most expensive_product_invoice": MostExpensiveProductInvoiceHandler(self.query_builder,self.classifier)
         }
 
     def generate(self, user_input: str) -> str:
