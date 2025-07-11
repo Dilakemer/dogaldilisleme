@@ -70,9 +70,6 @@ class IntentClassifier:
 
     def extract_min_spending(self, text: str) -> float:
         return extract_amount(text)  # alias
-    
-    def extract_product(self, text: str) -> Optional[str]:
-        return extract_product(text, self.products)
-    
+
     def extract_location(self, text: str) -> Optional[str]:
         return extract_city(text)
